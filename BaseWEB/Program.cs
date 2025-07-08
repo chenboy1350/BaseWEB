@@ -1,16 +1,19 @@
 using BaseWEB.Data;
 using BaseWEB.Services.Implement;
 using BaseWEB.Services.Interface;
+using BaseWEB.Services.Middleware;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
 
 builder.Services.AddDbContext<JPDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<ICookieAuthService, CookieAuthService>();
-builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddAuthentication("AppCookieAuth")
     .AddCookie("AppCookieAuth", options =>
@@ -35,6 +38,8 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<AutoRefreshTokenMiddleware>();
 
 app.MapStaticAssets();
 

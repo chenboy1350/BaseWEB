@@ -1,13 +1,11 @@
-﻿using BaseWEB.Data.Entities;
-using BaseWEB.Services.Interface;
+﻿using BaseWEB.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BaseWEB.Controllers
 {
-    public class AuthController(IUserService userService, ICookieAuthService cookieAuthService) : Controller
+    public class AuthController(IAuthService userService) : Controller
     {
-        private readonly IUserService _userService = userService;
-        private readonly ICookieAuthService _cookieAuthService = cookieAuthService;
+        private readonly IAuthService _authService = userService;
 
         public IActionResult Login()
         {
@@ -23,45 +21,18 @@ namespace BaseWEB.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(string username, string password, bool remember)
         {
-            Userid user = _userService.ValidateUser(username, password);
-            if (user == null || user.Num == 0)
-            {
-                return Json(new { success = false, message = "Invalid credentials" });
-            }
+            var result = await _authService.LoginUserAsync(username, password, remember);
 
-            await _cookieAuthService.SignInAsync(HttpContext, user.Num, user.Userid1, user.Useridgroup, remember);
+            if (!result.Success)
+                return Json(new { success = false, message = result.Message });
 
-            if (remember)
-            {
-                Response.Cookies.Append("RememberedUsername", username, new CookieOptions
-                {
-                    Expires = DateTimeOffset.UtcNow.AddDays(7),
-                    IsEssential = true
-                });
-
-                Response.Cookies.Append("RememberMeChecked", "true", new CookieOptions
-                {
-                    Expires = DateTimeOffset.UtcNow.AddDays(7),
-                    IsEssential = true
-                });
-            }
-            else
-            {
-                Response.Cookies.Delete("RememberedUsername");
-                Response.Cookies.Delete("RememberMeChecked");
-            }
-
-            return Json(new
-            {
-                success = true,
-                redirectUrl = Url.Action("Index", "Home")
-            });
+            return Json(new { success = true, redirectUrl = Url.Action("Index", "Home") });
         }
 
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
-            await _cookieAuthService.SignOutAsync(HttpContext);
+            await _authService.LogoutAsync();
             return Json(new
             {
                 success = true,
@@ -69,5 +40,24 @@ namespace BaseWEB.Controllers
             });
         }
 
+        [HttpPost("refresh-session")]
+        public async Task<IActionResult> RefreshSession()
+        {
+            var result = await _authService.RefreshTokenAsync();
+
+            if (result.Success)
+            {
+                return Ok(new { message = "Session refreshed successfully" });
+            }
+
+            return Unauthorized(new { message = result.Message });
+        }
+
+        [HttpPost("logout-session")]
+        public async Task<IActionResult> LogoutSession()
+        {
+            await _authService.LogoutAsync();
+            return Ok(new { message = "Logged out successfully" });
+        }
     }
 }
