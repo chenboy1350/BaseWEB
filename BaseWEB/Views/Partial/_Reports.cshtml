@@ -1,22 +1,48 @@
-﻿<div class="card">
-    <div class="card-header">
-        <h3 class="card-title">Reports</h3>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label>From Date</label>
-                    <input type="date" class="form-control">
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label>To Date</label>
-                    <input type="date" class="form-control">
-                </div>
-            </div>
+﻿<!-- Reports Content -->
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Reports</h3>
         </div>
-        <button class="btn btn-primary">Generate Report</button>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>From Date</label>
+                        <input type="date" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>To Date</label>
+                        <input type="date" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Report Type</label>
+                        <select class="form-control">
+                            <option>Sales Report</option>
+                            <option>User Activity Report</option>
+                            <option>Product Performance Report</option>
+                            <option>Order Status Report</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Format</label>
+                        <select class="form-control">
+                            <option>PDF</option>
+                            <option>Excel</option>
+                            <option>CSV</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary">Generate Report</button>
+        </div>
     </div>
 </div>

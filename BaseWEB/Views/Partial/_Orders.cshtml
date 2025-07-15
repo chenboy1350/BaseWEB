@@ -1,0 +1,56 @@
+﻿<!-- Orders Content -->
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Orders Management</h3>
+            <div class="card-tools">
+                <div class="input-group input-group-sm" style="width: 150px;">
+                    <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-default">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>#ORD001</td>
+                        <td>John Smith</td>
+                        <td>$1,299</td>
+                        <td><span class="badge badge-success">Completed</span></td>
+                        <td>2023-12-01</td>
+                        <td>
+                            <button class="btn btn-sm btn-info">View</button>
+                            <button class="btn btn-sm btn-primary">Edit</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>#ORD002</td>
+                        <td>Jane Doe</td>
+                        <td>$599</td>
+                        <td><span class="badge badge-warning">Pending</span></td>
+                        <td>2023-12-02</td>
+                        <td>
+                            <button class="btn btn-sm btn-info">View</button>
+                            <button class="btn btn-sm btn-primary">Edit</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

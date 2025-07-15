@@ -1,42 +1,47 @@
-﻿<!-- Users Content -->
+﻿<!-- Products Content -->
 <div class="container-fluid">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Users Management</h3>
+            <h3 class="card-title">Products Management</h3>
             <div class="card-tools">
                 <button class="btn btn-primary btn-sm">
-                    <i class="fas fa-plus"></i> Add User
+                    <i class="fas fa-plus"></i> Add Product
                 </button>
             </div>
         </div>
         <div class="card-body">
-            <table class="table table-bordered">
+            <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Role</th>
+                        <th>Product Name</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>1</td>
-                        <td>John Doe</td>
-                        <td>john@example.com</td>
-                        <td><span class="badge badge-success">Admin</span></td>
+                        <td>Laptop Dell</td>
+                        <td>$999</td>
+                        <td>15</td>
+                        <td><span class="badge badge-success">Active</span></td>
                         <td>
+                            <button class="btn btn-sm btn-info">View</button>
                             <button class="btn btn-sm btn-primary">Edit</button>
                             <button class="btn btn-sm btn-danger">Delete</button>
                         </td>
                     </tr>
                     <tr>
                         <td>2</td>
-                        <td>Jane Smith</td>
-                        <td>jane@example.com</td>
-                        <td><span class="badge badge-info">User</span></td>
+                        <td>iPhone 13</td>
+                        <td>$799</td>
+                        <td>0</td>
+                        <td><span class="badge badge-warning">Out of Stock</span></td>
                         <td>
+                            <button class="btn btn-sm btn-info">View</button>
                             <button class="btn btn-sm btn-primary">Edit</button>
                             <button class="btn btn-sm btn-danger">Delete</button>
                         </td>

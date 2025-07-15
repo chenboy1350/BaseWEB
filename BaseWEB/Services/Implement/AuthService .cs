@@ -10,10 +10,12 @@ namespace BaseWEB.Services.Implement
 {
     public class AuthService(
         IHttpContextAccessor contextAccessor,
-        ICookieAuthService cookieAuthService) : IAuthService
+        ICookieAuthService cookieAuthService,
+        IConfiguration configuration) : IAuthService
     {
         private readonly IHttpContextAccessor _contextAccessor = contextAccessor;
         private readonly ICookieAuthService _cookieAuthService = cookieAuthService;
+        private readonly IConfiguration _configuration = configuration;
 
         public async Task<LoginResult> LoginUserAsync(string username, string password, bool rememberMe)
         {
@@ -77,7 +79,6 @@ namespace BaseWEB.Services.Implement
             return new LoginResult { Success = true };
         }
 
-        // 2. เพิ่ม Method สำหรับ Refresh Token
         public async Task<RefreshTokenResult> RefreshTokenAsync()
         {
             var context = _contextAccessor.HttpContext!;
@@ -133,7 +134,6 @@ namespace BaseWEB.Services.Implement
             }
         }
 
-        // 3. เพิ่ม Method สำหรับ Logout
         public async Task<bool> LogoutAsync()
         {
             var context = _contextAccessor.HttpContext!;
@@ -168,18 +168,22 @@ namespace BaseWEB.Services.Implement
 
         private async Task<AuthResponseModel?> CallRefreshTokenApi(string refreshToken)
         {
+            var apiSettings = _configuration.GetSection("ApiSettings");
+            var apiKey = apiSettings["APIKey"];
+            var urlRefreshToken = apiSettings["RefreshToken"];
+
             using var httpClient = new HttpClient();
 
             var request = new RefreshTokenRequestModel { RefreshToken = refreshToken };
-            var json = JsonSerializer.Serialize(request);
+            var json = JsonSerializer.Serialize(request, CachedJsonSerializerOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PostAsync("https://localhost/JPWEBAPI/api/auth/RefreshToken", content);
+            var response = await httpClient.PostAsync(urlRefreshToken, content);
 
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<AuthResponseModel>(responseContent);
+                return JsonSerializer.Deserialize<AuthResponseModel>(responseContent, CachedJsonSerializerOptions);
             }
 
             return null;
@@ -187,6 +191,10 @@ namespace BaseWEB.Services.Implement
 
         private async Task<bool> CallRevokeTokenApi(string refreshToken)
         {
+            var apiSettings = _configuration.GetSection("ApiSettings");
+            var apiKey = apiSettings["APIKey"];
+            var urlAccessToken = apiSettings["AccessToken"];
+
             using var httpClient = new HttpClient();
 
             var request = new RefreshTokenRequestModel { RefreshToken = refreshToken };
@@ -197,11 +205,15 @@ namespace BaseWEB.Services.Implement
             return response.IsSuccessStatusCode;
         }
 
-        private static async Task<AuthResponseModel> ValidateUserAsync(string username, string password)
+        private async Task<AuthResponseModel> ValidateUserAsync(string username, string password)
         {
             try
             {
                 InputValidator validator = new();
+                var apiSettings = _configuration.GetSection("ApiSettings");
+                var apiKey = apiSettings["APIKey"];
+                var urlAccessToken = apiSettings["AccessToken"];
+
                 if (validator.IsValidInput(username) && validator.IsValidInput(password))
                 {
                     using var httpClient = new HttpClient();
@@ -210,14 +222,14 @@ namespace BaseWEB.Services.Implement
                         ClientId = username,
                         ClientSecret = password
                     };
-                    var content = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
-                    httpClient.DefaultRequestHeaders.Add("x-api-key", "SmV3ZWx5UHJpbmNlc3NBUElLZXk");
-                    var response = await httpClient.PostAsync("https://localhost/JPWEBAPI/api/auth/AccessToken", content);
+                    var content = new StringContent(JsonSerializer.Serialize(requestBody, CachedJsonSerializerOptions), Encoding.UTF8, "application/json");
+                    httpClient.DefaultRequestHeaders.Add("x-api-key", apiKey);
+                    var response = await httpClient.PostAsync(urlAccessToken, content);
 
                     if (response.IsSuccessStatusCode)
                     {
                         var responseString = await response.Content.ReadAsStringAsync();
-                        var user = JsonSerializer.Deserialize<AuthResponseModel>(responseString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                        var user = JsonSerializer.Deserialize<AuthResponseModel>(responseString, CachedJsonSerializerOptions);
                         return user ?? new AuthResponseModel();
                     }
                     else
@@ -235,6 +247,11 @@ namespace BaseWEB.Services.Implement
                 throw new InvalidOperationException("An error occurred while validating the user.", ex);
             }
         }
+
+        private static readonly JsonSerializerOptions CachedJsonSerializerOptions = new()
+        {
+            PropertyNameCaseInsensitive = true
+        };
 
         public class AuthRequestModel
         {
